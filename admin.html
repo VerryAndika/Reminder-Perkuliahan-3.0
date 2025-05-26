@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel - Jadwal Kuliah</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+      color: #333;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #dc2626, #991b1b);
+      color: white;
+      text-align: center;
+      padding: 2rem;
+      position: relative;
+    }
+
+    .header h1 {
+      font-size: 1.8rem;
+      font-weight: 300;
+      letter-spacing: 1px;
+    }
+
+    .back-link {
+      position: absolute;
+      top: 1rem;
+      left: 1rem;
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      text-decoration: none;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+    }
+
+    .back-link:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .admin-controls {
+      padding: 2rem;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .control-buttons {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .btn-secondary {
+      background: linear-gradient(135deg, #6b7280, #4b5563);
+      color: white;
+      border: none;
+      padding: 0.8rem 1.5rem;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .btn-secondary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(107, 114, 128, 0.3);
+    }
+
+    .btn-danger {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+    }
+
+    .btn-danger:hover {
+      box-shadow: 0 6px 12px rgba(239, 68, 68, 0.3);
+    }
+
+    .form-section {
+      padding: 2rem;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form-group label {
+      font-weight: 500;
+      color: #374151;
+      margin-bottom: 0.5rem;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .form-control {
+      padding: 0.8rem 1rem;
+      border: 2px solid #e5e7eb;
+      border-radius: 10px;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      background: #fff;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: #dc2626;
+      box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+    }
+
+    .manual-input {
+      display: none;
+      margin-top: 0.5rem;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #dc2626, #991b1b);
+      color: white;
+      border: none;
+      padding: 1rem 2rem;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(220, 38, 38, 0.3);
+    }
+
+    .schedule-section {
+      padding: 2rem;
+    }
+
+    .schedule-list {
+      max-height: 400px;
+      overflow-y: auto;
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      padding: 1rem;
+    }
+
+    .schedule-item {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .schedule-item:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .schedule-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .delete-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #ef4444;
+      color: white;
+      border: none;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      opacity: 0.7;
+    }
+
+    .delete-btn:hover {
+      background: #dc2626;
+      opacity: 1;
+      transform: scale(1.1);
+    }
+
+    .course-name {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #dc2626;
+      margin-bottom: 0.5rem;
+    }
+
+    .schedule-meta {
+      font-size: 0.8rem;
+      color: #6b7280;
+      margin-bottom: 0.5rem;
+    }
+
+    .schedule-details {
+      display: grid;
+      gap: 0.3rem;
+      font-size: 0.85rem;
+    }
+
+    .schedule-detail {
+      display: flex;
+      align-items: center;
+      color: #6b7280;
+    }
+
+    .detail-label {
+      font-weight: 500;
+      min-width: 60px;
+      color: #374151;
+    }
+
+    .status-message {
+      padding: 1rem;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+      font-weight: 500;
+    }
+
+    .status-success {
+      background: #d1fae5;
+      color: #065f46;
+      border: 1px solid #a7f3d0;
+    }
+
+    .status-error {
+      background: #fee2e2;
+      color: #991b1b;
+      border: 1px solid #fca5a5;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .container {
+        margin: 10px;
+        border-radius: 15px;
+      }
+
+      .header {
+        padding: 1.5rem;
+      }
+
+      .header h1 {
+        font-size: 1.5rem;
+      }
+
+      .back-link {
+        position: static;
+        display: inline-block;
+        margin-bottom: 1rem;
+      }
+
+      .admin-controls,
+      .form-section,
+      .schedule-section {
+        padding: 1.5rem;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+
+      .control-buttons {
+        flex-direction: column;
+      }
+    }
+
+    @media (max-width: 480px) {
+      body {
+        padding: 10px;
+      }
+
+      .header h1 {
+        font-size: 1.3rem;
+      }
+
+      .admin-controls,
+      .form-section,
+      .schedule-section {
+        padding: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <a href="index.html" class="back-link">← Kembali ke Jadwal</a>
+      <h1>Admin Panel - Jadwal Kuliah</h1>
+    </div>
+
+    <div class="admin-controls">
+      <div class="control-buttons">
+        <button class="btn-secondary" onclick="exportData()">Export Data</button>
+        <button class="btn-secondary" onclick="document.getElementById('importFile').click()">Import Data</button>
+        <button class="btn-danger" onclick="clearAllData()">Hapus Semua Data</button>
+      </div>
+      <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importData(event)">
+      <div id="statusMessage"></div>
+    </div>
+
+    <div class="form-section">
+      <h2 style="margin-bottom: 1.5rem; color: #374151;">Tambah Jadwal Baru</h2>
+      
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="tanggal">Tanggal Kuliah</label>
+          <input type="date" id="tanggal" class="form-control">
+        </div>
+
+        <div class="form-group">
+          <label for="matkul">Mata Kuliah</label>
+          <select id="matkul" class="form-control">
+            <option value="Agama Hindu">Agama Hindu</option>
+            <option value="Bahasa Indonesia">Bahasa Indonesia</option>
+            <option value="Didaktik Metodik Pembelajaran Informatika">Didaktik Metodik Pembelajaran Informatika</option>
+            <option value="Asesmen dan Evaluasi Pembelajaran TI">Asesmen dan Evaluasi Pembelajaran TI</option>
+            <option value="Sistem Informasi">Sistem Informasi</option>
+            <option value="Algoritma dan Pemrograman">Algoritma dan Pemrograman</option>
+            <option value="Belajar dan Pembelajaran">Belajar dan Pembelajaran</option>
+            <option value="Statistika Dasar">Statistika Dasar</option>
+            <option value="UI/UX">UI/UX</option>
+            <option value="Basis Data">Basis Data</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="jamMulai">Jam Mulai</label>
+          <select id="jamMulai" class="form-control" onchange="updateWaktu()">
+            <option value="A">A - 07:30–08:30</option>
+            <option value="B">B - 08:30–09:30</option>
+            <option value="C">C - 09:30–10:30</option>
+            <option value="D">D - 10:30–11:30</option>
+            <option value="E">E - 11:30–12:30</option>
+            <option value="F">F - 12:30–13:30</option>
+            <option value="G">G - 13:30–14:30</option>
+            <option value="H">H - 14:30–15:30</option>
+            <option value="I">I - 15:30–16:30</option>
+            <option value="J">J - 16:30–17:30</option>
+            <option value="Manual">Ketik Manual</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="jamSelesai">Jam Selesai</label>
+          <select id="jamSelesai" class="form-control" onchange="updateWaktu()">
+            <option value="A">A - 07:30–08:30</option>
+            <option value="B">B - 08:30–09:30</option>
+            <option value="C">C - 09:30–10:30</option>
+            <option value="D">D - 10:30–11:30</option>
+            <option value="E">E - 11:30–12:30</option>
+            <option value="F">F - 12:30–13:30</option>
+            <option value="G">G - 13:30–14:30</option>
+            <option value="H">H - 14:30–15:30</option>
+            <option value="I">I - 15:30–16:30</option>
+            <option value="J">J - 16:30–17:30</option>
+            <option value="Manual">Ketik Manual</option>
+            <option value="Tidak Ditampilkan">Tidak Ditampilkan</option>
+          </select>
+        </div>
+
+        <div class="form-group manual-time-inputs" style="display: none;">
+          <label for="jamManual">Waktu Manual</label>
+          <input type="text" id="jamManual" class="form-control" placeholder="Contoh: 07:30-10:30">
+        </div>
+
+        <div class="form-group">
+          <label for="dosen">Dosen</label>
+          <select id="dosen" class="form-control">
+            <option value="Prof. Dr. I Wayan Santyasa, M.Si.">Prof. Dr. I Wayan Santyasa, M.Si.</option>
+            <option value="Dr. I Nyoman Yasa, S.Pd., M.A.">Dr. I Nyoman Yasa, S.Pd., M.A.</option>
+            <option value="Dr. phil. Dessy Seri Wahyuni, S.Kom., M.Eng.">Dr. phil. Dessy Seri Wahyuni, S.Kom., M.Eng.</option>
+            <option value="I Nyoman Indhi Wiradika, M.Pd.">I Nyoman Indhi Wiradika, M.Pd.</option>
+            <option value="Luh Putu Eka Damayanthi, S.Pd., M.Pd.">Luh Putu Eka Damayanthi, S.Pd., M.Pd.</option>
+            <option value="I Gede Bendesa Subawa, S.Pd., M.Kom.">I Gede Bendesa Subawa, S.Pd., M.Kom.</option>
+            <option value="Gusti Ayu Cantika Putri, S.T., M.Ars.">Gusti Ayu Cantika Putri, S.T., M.Ars.</option>
+            <option value="I Gusti Ayu Agung Diatri Indrawati, S.Kom., M.T.">I Gusti Ayu Agung Diatri Indrawati, S.Kom., M.T.</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="ruangan">Ruangan</label>
+          <select id="ruangan" class="form-control">
+            <option value="FTK.G.2.05">FTK.G.2.05 - Ruang Kuliah TPRL JD</option>
+            <option value="FTK.F.3.09.L">FTK.F.3.09.L - Lab Komputer TI 4 JD</option>
+            <option value="Penugasan">Penugasan</option>
+            <option value="Tidak Ditampilkan">Tidak Ditampilkan</option>
+            <option value="Manual">Ketik Manual</option>
+          </select>
+          <input type="text" id="ruanganManual" class="form-control manual-input" placeholder="Masukkan ruangan manual" style="display: none;">
+        </div>
+
+        <div class="form-group">
+          <label for="mode">Mode Pembelajaran</label>
+          <select id="mode" class="form-control">
+            <option value="Luring">Luring</option>
+            <option value="Daring">Daring</option>
+            <option value="Online - Zoom Meeting">Online - Zoom Meeting</option>
+            <option value="E-Learning">E-Learning</option>
+            <option value="Penugasan">Penugasan</option>
+            <option value="Asinkronus">Asinkronus</option>
+            <option value="Observasi">Observasi</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-bottom: 2rem;">
+        <label for="keterangan">Keterangan</label>
+        <textarea id="keterangan" rows="3" class="form-control" placeholder="Contoh: Pindah Sabtu, Praktisi, dll"></textarea>
+      </div>
+
+      <button class="btn-primary" onclick="tambahJadwal()">Tambah Jadwal</button>
+    </div>
+
+    <div class="schedule-section">
+      <h2 style="margin-bottom: 1.5rem; color: #374151;">Daftar Semua Jadwal</h2>
+      <div class="schedule-list" id="allScheduleList"></div>
+    </div>
+  </div>
+
+  <script>
+    let jadwalData = {};
+
+    const jamSchedule = {
+      'A': { start: '07:30', end: '08:30' },
+      'B': { start: '08:30', end: '09:30' },
+      'C': { start: '09:30', end: '10:30' },
+      'D': { start: '10:30', end: '11:30' },
+      'E': { start: '11:30', end: '12:30' },
+      'F': { start: '12:30', end: '13:30' },
+      'G': { start: '13:30', end: '14:30' },
+      'H': { start: '14:30', end: '15:30' },
+      'I': { start: '15:30', end: '16:30' },
+      'J': { start: '16:30', end: '17:30' }
+    };
+
+    function showStatus(message, isError = false) {
+      const statusDiv = document.getElementById('statusMessage');
+      statusDiv.className = `status-message ${isError ? 'status-error' : 'status-success'}`;
+      statusDiv.textContent = message;
+      statusDiv.style.display = 'block';
+      
+      setTimeout(() => {
+        statusDiv.style.display = 'none';
+      }, 3000);
+    }
+
+    function loadScheduleData() {
+      try {
+        const savedData = localStorage.getItem('jadwalKuliah');
+        if (savedData) {
+          jadwalData = JSON.parse(savedData);
+        } else {
+          jadwalData = {};
+        }
+        displayAllSchedules();
+      } catch (error) {
+        console.error('Error loading schedule data:', error);
+        jadwalData = {};
+        showStatus('Error loading data: ' + error.message, true);
+      }
+    }
+
+    function saveScheduleData() {
+      try {
+        localStorage.setItem('jadwalKuliah', JSON.stringify(jadwalData));
+        return true;
+      } catch (error) {
+        console.error('Error saving schedule data:', error);
+        showStatus('Error saving data: ' + error.message, true);
+        return false;
+      }
+    }
+
+    function updateWaktu() {
+      const jamMulai = document.getElementById('jamMulai').value;
+      const jamSelesai = document.getElementById('jamSelesai').value;
+      const manualTimeInputs = document.querySelector('.manual-time-inputs');
+      
+      if (jamMulai === 'Manual' || jamSelesai === 'Manual') {
+        manualTimeInputs.style.display = 'block';
+      } else {
+        manualTimeInputs.style.display = 'none';
+      }
+    }
+
+    function toggleRuanganManual() {
+      const ruanganVal = document.getElementById("ruangan").value;
+      const manualInput = document.getElementById("ruanganManual");
+      manualInput.style.display = (ruanganVal === "Manual") ? "block" : "none";
+    }
+
+    document.getElementById('ruangan').addEventListener('change', toggleRuanganManual);
+
+    function generateTimeString() {
+      const jamMulai = document.getElementById('jamMulai').value;
+      const jamSelesai = document.getElementById('jamSelesai').value;
+      const jamManual = document.getElementById('jamManual').value.trim();
+
+      if (jamMulai === 'Manual' || jamSelesai === 'Manual') {
+        return jamManual || 'Waktu Manual';
+      }
+
+      if (jamSelesai === 'Tidak Ditampilkan') {
+        return 'Tidak Ditampilkan';
+      }
+
+      if (jamSchedule[jamMulai] && jamSchedule[jamSelesai]) {
+        return `${jamMulai} – ${jamSelesai} [${jamSchedule[jamMulai].start} - ${jamSchedule[jamSelesai].end}]`;
+      }
+
+      return `${jamMulai} – ${jamSelesai}`;
+    }
+
+    function tambahJadwal() {
+      const tanggal = document.getElementById('tanggal').value;
+      const matkul = document.getElementById('matkul').value;
+      const dosen = document.getElementById('dosen').value;
+      const ruanganSelect = document.getElementById('ruangan').value;
+      const ruanganManual = document.getElementById('ruanganManual').value.trim();
+      const mode = document.getElementById('mode').value;
+      const ket = document.getElementById('keterangan').value;
+      const jamMulai = document.getElementById('jamMulai').value;
+      const jamSelesai = document.getElementById('jamSelesai').value;
+      const jamManual = document.getElementById('jamManual').value.trim();
+
+      if (!tanggal) {
+        showStatus("Tanggal harus diisi!", true);
+        return;
+      }
+
+      if ((jamMulai === 'Manual' || jamSelesai === 'Manual') && !jamManual) {
+        showStatus("Masukkan waktu manual!", true);
+        return;
+      }
+
+      if (ruanganSelect === 'Manual' && !ruanganManual) {
+        showStatus("Masukkan ruangan manual!", true);
+        return;
+      }
+
+      const jam = generateTimeString();
+      const ruangan = ruanganSelect === 'Manual' ? ruanganManual : ruanganSelect;
+
+      const data = { 
+        matkul, 
+        jam, 
+        jamMulai, 
+        jamSelesai, 
+        dosen, 
+        ruangan, 
+        mode, 
+        ket 
+      };
+
+      if (!jadwalData[tanggal]) jadwalData[tanggal] = [];
+      jadwalData[tanggal].push(data);
+
+      if (saveScheduleData()) {
+        showStatus("Jadwal berhasil ditambahkan!");
+        clearForm();
+        displayAllSchedules();
+      }
+    }
+
+    function clearForm() {
+      document.getElementById('tanggal').value = '';
+      document.getElementById('jamManual').value = '';
+      document.getElementById('ruanganManual').value = '';
+      document.getElementById('keterangan').value = '';
+      document.querySelector('.manual-time-inputs').style.display = 'none';
+      document.getElementById('ruanganManual').style.display = 'none';
+    }
+
+    function formatDate(dateStr) {
+      const date = new Date(dateStr);
+      const hariList = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+      const hari = hariList[date.getDay()];
+      const tgl = `${String(date.getDate()).padStart(2, '0')}-${String(date.getMonth()+1).padStart(2,'0')}-${date.getFullYear()}`;
+      return `${hari}, ${tgl}`;
+    }
+
+    function displayAllSchedules() {
+      const container = document.getElementById('allScheduleList');
+      container.innerHTML = '';
+
+      const sortedDates = Object.keys(jadwalData).sort();
+      
+      if (sortedDates.length === 0) {
+        container.innerHTML = '<div style="text-align: center; color: #9ca3af; font-style: italic; padding: 2rem;">Tidak ada jadwal yang tersimpan</div>';
+        return;
+      }
+
+      sortedDates.forEach(tanggal => {
+        const schedules = jadwalData[tanggal];
+        schedules.forEach((schedule, index) => {
+          const div = document.createElement('div');
+          div.className = 'schedule-item';
+          
+          let detailsHtml = '';
+          if (schedule.jam !== "Tidak Ditampilkan") {
+            detailsHtml += `<div class="schedule-detail"><span class="detail-label">Waktu:</span> ${schedule.jam}</div>`;
+          }
+          detailsHtml += `<div class="schedule-detail"><span class="detail-label">Dosen:</span> ${schedule.dosen}</div>`;
+          if (schedule.ruangan && schedule.ruangan !== "Tidak Ditampilkan") {
+            detailsHtml += `<div class="schedule-detail"><span class="detail-label">Ruangan:</span> ${schedule.ruangan}</div>`;
+          }
+          if (schedule.mode) {
+            detailsHtml += `<div class="schedule-detail"><span class="detail-label">Mode:</span> ${schedule.mode}</div>`;
+          }
+          if (schedule.ket) {
+            detailsHtml += `<div class="schedule-detail"><span class="detail-label">Ket:</span> ${schedule.ket}</div>`;
+          }
+
+          div.innerHTML = `
+            <button class="delete-btn" onclick="hapusJadwal('${tanggal}', ${index})" title="Hapus jadwal">×</button>
+            <div class="course-name">${schedule.matkul}</div>
+            <div class="schedule-meta">${formatDate(tanggal)}</div>
+            <div class="schedule-details">${detailsHtml}</div>
+          `;
+          container.appendChild(div);
+        });
+      });
+    }
+
+    function hapusJadwal(tanggal, index) {
+      if (confirm('Apakah Anda yakin ingin menghapus jadwal ini?')) {
+        if (jadwalData[tanggal] && jadwalData[tanggal][index]) {
+          jadwalData[tanggal].splice(index, 1);
+          
+          if (jadwalData[tanggal].length === 0) {
+            delete jadwalData[tanggal];
+          }
+          
+          if (saveScheduleData()) {
+            showStatus('Jadwal berhasil dihapus!');
+            displayAllSchedules();
+          }
+        }
+      }
+    }
+
+    function exportData() {
+      try {
+        const dataStr = JSON.stringify(jadwalData, null, 2);
+        const dataBlob = new Blob([dataStr], {type: 'application/json'});
+        
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(dataBlob);
+        link.download = `jadwal-kuliah-${new Date().toISOString().split('T')[0]}.json`;
+        link.click();
+        
+        showStatus('Data berhasil diexport!');
+      } catch (error) {
+        showStatus('Error exporting data: ' + error.message, true);
+      }
+    }
+
+    function importData(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const importedData = JSON.parse(e.target.result);
+          
+          if (confirm('Import data akan mengganti semua data yang ada. Lanjutkan?')) {
+            jadwalData = importedData;
+            if (saveScheduleData()) {
+              showStatus('Data berhasil diimport!');
+              displayAllSchedules();
+            }
+          }
+        } catch (error) {
+          showStatus('Error importing data: ' + error.message, true);
+        }
+      };
+      reader.readAsText(file);
+      
+      // Reset input
+      event.target.value = '';
+    }
+
+    function clearAllData() {
+      if (confirm('Apakah Anda yakin ingin menghapus SEMUA data jadwal? Tindakan ini tidak dapat dibatalkan!')) {
+        if (confirm('Konfirmasi sekali lagi: Hapus SEMUA data jadwal?')) {
+          jadwalData = {};
+          if (saveScheduleData()) {
+            showStatus('Semua data berhasil dihapus!');
+            displayAllSchedules();
+          }
+        }
+      }
+    }
+
+    window.onload = () => {
+      loadScheduleData();
+      
+      // Set today's date as default
+      const today = new Date();
+      const dateStr = today.toISOString().split('T')[0];
+      document.getElementById('tanggal').value = dateStr;
+    };
+  </script>
+</body>
+</html>.3.06.L">FTK.F.3.06.L - Lab Komputer TI 1 JD</option>
+            <option value="FTK.F.3.08.L">FTK.F.3.08.L - Lab Komputer TI 3 JD</option>
+            <option value="FTK.E.2.05">FTK.E.2.05 - Ruang Kuliah PTI, Kampus Tengah</option>
+            <option value="FTK.E.2.02">FTK.E.2.02 - Ruang Kuliah SI, Kampus Tengah</option>
+            <option value="FTK.F.3.01">FTK.F.3.01 - Ruang Kuliah PTI JD</option>
+            <option value="FTK.F
